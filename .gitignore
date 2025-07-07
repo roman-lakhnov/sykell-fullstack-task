@@ -1,2 +1,9 @@
+# project
+notes.md
+
 # server
 go.sum
+
+# client
+node_modules
+dist
