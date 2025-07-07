@@ -22,8 +22,8 @@ func UpdateLink(c *gin.Context) {
 	}
 
 	// Validate status value
-	if req.Status != "stop" && req.Status != "pending" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Status must be either 'stop' or 'pending'"})
+	if req.Status != "stop" && req.Status != "created" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Status must be either 'stop' or 'created'"})
 		return
 	}
 

@@ -8,6 +8,7 @@ import (
 
 func main() {
 	analyzer.InitDB()
+	analyzer.StartAnalyzerWorker()
 
 	router := gin.Default()
 	router.POST("/links", analyzer.AddLinks)

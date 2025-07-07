@@ -20,7 +20,7 @@ func AddLinks(c *gin.Context) {
 
 	for _, link := range req.URLs {
 		// Save to DB
-		err := SaveToDB(link,"pending", nil, "", "", map[string]int{}, 0,  0, 0, false)
+		err := SaveToDB(link,"created", nil, "", "", map[string]int{}, 0,  0, 0, false)
 		if err != nil {
 			fmt.Printf("Failed to save to DB for %s: %v\n", link, err)
 		}
