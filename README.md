@@ -7,7 +7,7 @@ basic Go server.
 ## Server Go+Gin
 
 Despite having zero experience with Go prior to this project, I developed the
-server component with Go, providing a RESTful API for analyzing web pages. It
+simple server with Go, providing a RESTful API for analyzing web pages. It
 uses the Gin framework for handling HTTP requests and in-docker MySQL for data storage.
 
 ### Features

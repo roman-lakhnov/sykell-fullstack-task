@@ -28,12 +28,15 @@ func GetLinks(c *gin.Context) {
 	// Calculate offset
 	offset := (page - 1) * amount
 
-	// Get links from database using the new function
-	links, err := GetLinksFromDB(amount, offset)
+	// Get links from database using the updated function that returns total count
+	links, totalCount, err := GetLinksFromDB(amount, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch links"})
 		return
 	}
+
+	// Calculate total pages
+	totalPages := (totalCount + amount - 1) / amount // Ceiling division
 
 	// Add pagination metadata to the response
 	c.JSON(http.StatusOK, gin.H{
@@ -41,6 +44,8 @@ func GetLinks(c *gin.Context) {
 		"pagination": gin.H{
 			"current_page": page,
 			"page_size":    amount,
+			"total_items":  totalCount,
+			"total_pages":  totalPages,
 		},
 	})
 }

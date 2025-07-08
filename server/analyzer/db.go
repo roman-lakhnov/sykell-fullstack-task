@@ -94,30 +94,95 @@ func SaveToDB(
 	return err
 }
 
+// First, update the Link struct to include all relevant fields
 type Link struct {
-	ID          int    `json:"id"`
-	URL         string `json:"url"`
-	CheckStatus string `json:"check_status"`
+	ID               int       `json:"id"`
+	URL              string    `json:"url"`
+	PostTime         string    `json:"post_time,omitempty"`
+	CheckStatus      string    `json:"status"`
+	CheckTime        string    `json:"check_time,omitempty"`
+	Title            string    `json:"title"`
+	HTMLVersion      string    `json:"html_version"`
+	HeadingsCount    map[string]int `json:"headings_count"`
+	InternalLinks    int       `json:"internal_links"`
+	ExternalLinks    int       `json:"external_links"`
+	InaccessibleLinks int      `json:"inaccessible_links"`
+	HasLoginForm     bool      `json:"has_login_form"`
 }
 
 // GetLinksFromDB retrieves links from the database with pagination
-func GetLinksFromDB(amount, offset int) ([]Link, error) {
-	rows, err := DB.Query("SELECT id, url, check_status FROM results ORDER BY id DESC LIMIT ? OFFSET ?", amount, offset)
+func GetLinksFromDB(amount, offset int) ([]Link, int, error) {
+	// First get the total count
+	var totalCount int
+	err := DB.QueryRow("SELECT COUNT(*) FROM results").Scan(&totalCount)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
+	}
+
+	// Then get the paginated results with all fields
+	query := `SELECT id, url, post_time, check_status, check_time, title, html_version, 
+					h1, h2, h3, h4, h5, h6, 
+					internal_links, external_links, inaccessible_links, login_form_detected 
+			 FROM results 
+			 ORDER BY id ASC 
+			 LIMIT ? OFFSET ?`
+
+	rows, err := DB.Query(query, amount, offset)
+	if err != nil {
+		return nil, 0, err
 	}
 	defer rows.Close()
 
 	var links []Link
 	for rows.Next() {
 		var link Link
-		if err := rows.Scan(&link.ID, &link.URL, &link.CheckStatus); err != nil {
-			return nil, err
+		var postTime, checkTime sql.NullString
+		var h1, h2, h3, h4, h5, h6 int
+
+		err := rows.Scan(
+			&link.ID,
+			&link.URL,
+			&postTime,
+			&link.CheckStatus,
+			&checkTime,
+			&link.Title,
+			&link.HTMLVersion,
+			&h1, &h2, &h3, &h4, &h5, &h6,
+			&link.InternalLinks,
+			&link.ExternalLinks,
+			&link.InaccessibleLinks,
+			&link.HasLoginForm,
+		)
+		if err != nil {
+			return nil, 0, err
 		}
+
+		// Handle nullable fields
+		if postTime.Valid {
+			link.PostTime = postTime.String
+		}
+		if checkTime.Valid {
+			link.CheckTime = checkTime.String
+		}
+
+		// Build the headings count map
+		link.HeadingsCount = map[string]int{
+			"h1": h1,
+			"h2": h2,
+			"h3": h3,
+			"h4": h4,
+			"h5": h5,
+			"h6": h6,
+		}
+
 		links = append(links, link)
 	}
 
-	return links, nil
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+
+	return links, totalCount, nil
 }
 
 // updateInDB updates an existing analysis result record in the database by ID
@@ -172,21 +237,21 @@ func updateInDB(
 		loginForm,
 		id,
 	)
-	
+
 	if err != nil {
 		return err
 	}
-	
+
 	// Check if the record was actually updated
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		return err
 	}
-	
+
 	if rowsAffected == 0 {
 		return sql.ErrNoRows
 	}
-	
+
 	return nil
 }
 
