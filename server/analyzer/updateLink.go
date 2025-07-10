@@ -70,6 +70,7 @@ func UpdateLink(c *gin.Context) {
 		external,
 		inaccessible,
 		loginForm,
+		nil, // No inaccessible links at this point
 	)
 
 	if err != nil {

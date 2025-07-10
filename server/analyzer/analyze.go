@@ -68,6 +68,7 @@ func processLink(link string, id int) error {
 		map[string]int{},
 		0, 0, 0,
 		false,
+		nil, // No inaccessible links at this point
 	)
 
 	resp, err := http.Get(link)
@@ -83,6 +84,7 @@ func processLink(link string, id int) error {
 			map[string]int{},
 			0, 0, 0,
 			false,
+			[]LinkIssue{{URL: link, StatusCode: resp.StatusCode}},
 		)
 	}
 	defer resp.Body.Close()
@@ -99,6 +101,7 @@ func processLink(link string, id int) error {
 			map[string]int{},
 			0, 0, 0,
 			false,
+			[]LinkIssue{{URL: link, StatusCode: -1}}, // Connection error
 		)
 	}
 
@@ -148,6 +151,7 @@ func processLink(link string, id int) error {
 	internalLinks := 0
 	externalLinks := 0
 	inaccessibleLinks := 0
+	var inaccessibleLinksDetails []LinkIssue
 
 	doc.Find("a[href]").Each(func(i int, s *goquery.Selection) {
 		href, _ := s.Attr("href")
@@ -185,6 +189,10 @@ func processLink(link string, id int) error {
 		req, err := http.NewRequest("HEAD", finalURL, nil)
 		if err != nil {
 			inaccessibleLinks++
+			inaccessibleLinksDetails = append(inaccessibleLinksDetails, LinkIssue{
+				URL:        finalURL,
+				StatusCode: -1, // Connection error
+			})
 			return
 		}
 
@@ -194,6 +202,10 @@ func processLink(link string, id int) error {
 		r, err := client.Do(req)
 		if err != nil {
 			inaccessibleLinks++
+			inaccessibleLinksDetails = append(inaccessibleLinksDetails, LinkIssue{
+				URL:        finalURL,
+				StatusCode: -1, // Connection error
+			})
 			return
 		}
 		defer r.Body.Close()
@@ -201,6 +213,10 @@ func processLink(link string, id int) error {
 		// Mark as inaccessible if status code is 4xx or 5xx
 		if r.StatusCode >= 400 {
 			inaccessibleLinks++
+			inaccessibleLinksDetails = append(inaccessibleLinksDetails, LinkIssue{
+				URL:        finalURL,
+				StatusCode: r.StatusCode,
+			})
 		}
 	})
 
@@ -227,6 +243,7 @@ func processLink(link string, id int) error {
 		externalLinks,
 		inaccessibleLinks,
 		loginForm,
+		inaccessibleLinksDetails,
 	)
 }
 
