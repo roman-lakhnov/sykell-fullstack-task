@@ -23,5 +23,9 @@
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": true
 	},
-	"include": ["src", "../trash/ResultsTable", "../trash/ResultsDashboard.tsx"]
+	"include": [
+		"src",
+		"src/components/ResultsTable",
+		"src/components/ResultsDashboard.tsx"
+	]
 }

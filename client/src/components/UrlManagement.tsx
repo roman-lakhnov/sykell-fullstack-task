@@ -68,7 +68,12 @@ const UrlManagement = () => {
 							</form>
 							{links.length > 0 && (
 								<div className='d-flex flex-column gap-3'>
-									<h4 className='m-0'>Links preview:</h4>
+									<div className='d-flex justify-content-between align-items-center'>
+										<h4 className='m-0'>Links preview:</h4>
+										<button className='btn btn-success' onClick={sendToServer}>
+											Submit for Analysis
+										</button>
+									</div>
 									<ul className='list-group'>
 										<li className='list-group-item'>
 											<div className='d-flex flex-wrap gap-2'>
@@ -87,11 +92,6 @@ const UrlManagement = () => {
 											</div>
 										</li>
 									</ul>
-									<div className='d-flex justify-content-end'>
-										<button className='btn btn-success' onClick={sendToServer}>
-											Submit for Analysis
-										</button>
-									</div>
 								</div>
 							)}
 						</div>
