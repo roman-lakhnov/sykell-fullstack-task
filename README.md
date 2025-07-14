@@ -9,20 +9,24 @@ basic Go server.
 - Ensure you have **Docker, Docker Compose, Node.js, npm, and Go with Gin**
   installed on your system.
 - Clone this repository.
-- Run `docker-compose up -d` to set up MariaDB.
+- Run `docker compose up -d` to set up MariaDB.
 - **Wait about 10-15 seconds** for the database to initialize.
-- Navigate to the server directory (`cd server`), then run the server `go run main.go` which will also create the initial database structure.
-- From root navigate to the client directory (`cd client`), run `npm i`, then
+- Navigate to the server directory (`cd server`), then run `go mod tidy` and
+  `go run main.go` which will instal dependencies and run the server and also
+  create the initial database structure.
+- In second terminal from root navigate to the client directory (`cd client`), run `npm i`, then
   `npm run dev`.
-- Open your browser `http://localhost:5173/` to view the client UI.
-- Enter a few links for testing (I suggest as example adding 5 links`https://www.python.org/downloads/,https://www.python.org/downloads/,https://www.python.org/downloads/,https://www.python.org/downloads/,https://www.python.org/downloads/`
+- Open your browser [http://localhost:5173/](http://localhost:5173/) to view the client UI.
+- Enter a few links for testing (I suggest as example adding 5
+  links`https://www.python.org/downloads/,https://www.python.org/downloads/,https://www.python.org/downloads/,https://www.python.org/downloads/,https://www.python.org/downloads/`
 - You will see a dashboard with one pending link and others in "created" status
   (in queue).
 - Server will analyze links one by one.
 - You can click "Refresh" to update the data status.
+- URL in example include almost 1000 links on page. Server need around 30 seconds to analyze one page.
 - You can stop or run/rerun analysis for any of the links.
 - You can also view the database structure and records via phpMyAdmin UI through
-  the web interface `http://localhost:8081/`.
+  the web interface [http://localhost:8081/](http://localhost:8081). Auth is analyzer_user analyzer_pass.
 
 ## ⚙️ Server Go+Gin
 
@@ -31,7 +35,7 @@ simple server with Go, providing a RESTful API for analyzing web pages. It uses
 the Gin framework for handling HTTP requests and in-docker MySQL for data
 storage.
 
-### Features
+### Server Features
 
 - **Link Analysis**: Analyzes web pages and extracts metadata including:
   - HTML version
@@ -63,7 +67,7 @@ The client is built using modern front-end technologies: Vite, TypeScript,
 React, and Bootstrap. It provides a user-friendly interface for interacting with
 the web page analysis service.
 
-### Features
+### Client Features
 
 - **URL Management**:
 
@@ -146,3 +150,7 @@ status in this project.
 | Bulk Actions: Re-run/delete URLs      | ❌ Not implemented                                                                                                                                      |
 | Real-Time Progress: Status indicators | ⚠️ Partially implemented - Color-coded status indicators implemented, but real-time updates require manual refresh rather than WebSocket implementation |
 | Automated front-end tests             | ❌ Not implemented                                                                                                                                      |
+
+## ⚙️ Afterwords
+
+Thanks for the task and review. Hope you find it well. It was a whole new, interesting, and useful experience for me. I realize that this task was complex, and I definitely could have done more and use better approaches, but it would exceed the allotted time. Hope to hear some feedback, good or bad. Thanks.
