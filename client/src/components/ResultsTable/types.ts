@@ -1,3 +1,8 @@
+export interface LinkIssue {
+	url: string
+	status_code: number
+}
+
 export interface Link {
 	id: number
 	url: string
@@ -17,6 +22,7 @@ export interface Link {
 	internal_links: number
 	external_links: number
 	inaccessible_links: number
+	inaccessible_details: LinkIssue[] 
 	has_login_form: boolean
 }
 
